@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import campaignRoutes from "./routes/campaign.route.js";
-import linkedinRoutes from "./routes/linkedin.route.js";
+import campaignRoutes from "./routes/campaign.route";
+import linkedinRoutes from "./routes/linkedin.route";
 
 dotenv.config();
 
