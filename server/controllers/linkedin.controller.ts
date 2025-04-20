@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { RequestHandler } from "express";
-import { generatedMessage } from "../lib/ai.js";
+import { generatedMessage } from "../lib/ai";
 
 export const generatePersonalizedMessage: RequestHandler = async (req, res) => {
   const { url } = req.body;

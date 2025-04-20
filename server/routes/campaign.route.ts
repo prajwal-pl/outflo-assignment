@@ -5,7 +5,7 @@ import {
   fetchAllCampaigns,
   fetchSingleCampaign,
   updateCampaign,
-} from "../controllers/campaign.controller.js";
+} from "../controllers/campaign.controller";
 
 const router = express.Router();
 
