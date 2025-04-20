@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import campaignRoutes from "./routes/campaign.route";
+import linkedinRoutes from "./routes/linkedin.route";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/campaigns", campaignRoutes);
+app.use("/personalized-message", linkedinRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
