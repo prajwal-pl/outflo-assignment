@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "groq-sdk": "^0.19.0",
     "linkedin-api-client": "^0.3.0",
     "linkedin-private-api": "^1.1.2",
     "node-linkedin": "^0.5.6",

@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { RequestHandler } from "express";
+import { generatedMessage } from "../lib/ai";
 
 export const generatePersonalizedMessage: RequestHandler = async (req, res) => {
   const { url } = req.body;
@@ -19,10 +20,18 @@ export const generatePersonalizedMessage: RequestHandler = async (req, res) => {
 
     const { firstName, lastName, summary } = response.data;
 
-    console.log(firstName, lastName, summary, company, location);
+    // console.log(firstName, lastName, summary, company, location);
+
+    const message = await generatedMessage({
+      firstName,
+      lastName,
+      summary,
+      company,
+      location,
+    });
 
     res.status(200).json({
-      message: `Hi ${firstName}, I noticed you work at ${company} in ${location}. I would love to connect and learn more about your work there!`,
+      message: message,
     });
   } catch (error) {
     console.error("Error generating personalized message:", error);
