@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { RequestHandler } from "express";
-import { generatedMessage } from "../lib/ai";
+import { generatedMessage } from "../lib/ai.js";
 
 export const generatePersonalizedMessage: RequestHandler = async (req, res) => {
   const { url } = req.body;
@@ -11,7 +11,7 @@ export const generatePersonalizedMessage: RequestHandler = async (req, res) => {
 
     const response = await axios.get(`${rapidAPIURL}?url=${url}`, {
       headers: {
-        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+        "X-RapidAPI-Key": process.env.RAPIDAPI_KEY!,
       },
     });
 
