@@ -3,7 +3,7 @@ import { Campaign, CampaignStatus } from "../../lib/types";
 import { campaignApi, linkedinApi } from "../../lib/api";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Switch } from "../ui/switch"; 
+import { Switch } from "../ui/switch";
 import LinkedInProfileParser from "../linkedin/LinkedInProfileParser";
 import { toast } from "sonner";
 import {
@@ -40,7 +40,9 @@ export function CampaignDetails({
     Record<string, string>
   >({});
   const [processingUrl, setProcessingUrl] = useState<string | null>(null);
-  const [currentStatus, setCurrentStatus] = useState<CampaignStatus>(campaign.status);
+  const [currentStatus, setCurrentStatus] = useState<CampaignStatus>(
+    campaign.status
+  );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   async function handleDelete() {
@@ -59,22 +61,23 @@ export function CampaignDetails({
   }
 
   async function handleStatusToggle() {
-    const newStatus = currentStatus === CampaignStatus.ACTIVE 
-      ? CampaignStatus.INACTIVE 
-      : CampaignStatus.ACTIVE;
-    
+    const newStatus =
+      currentStatus === CampaignStatus.ACTIVE
+        ? CampaignStatus.INACTIVE
+        : CampaignStatus.ACTIVE;
+
     setIsUpdatingStatus(true);
     setError(null);
-    
+
     try {
       const updatedCampaign = await campaignApi.update({
         id: campaign.id,
         status: newStatus,
       });
-      
+
       setCurrentStatus(newStatus);
       toast(`Campaign status updated to ${newStatus}`);
-      
+
       if (onStatusChange) {
         onStatusChange(updatedCampaign);
       }
@@ -119,17 +122,19 @@ export function CampaignDetails({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete this campaign?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Are you sure you want to delete this campaign?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the campaign
-              and remove all associated data from our servers.
+              This action cannot be undone. This will permanently delete the
+              campaign and remove all associated data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDelete} 
-              disabled={isDeleting} 
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting ? "Deleting..." : "Delete Campaign"}

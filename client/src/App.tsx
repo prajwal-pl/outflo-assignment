@@ -56,7 +56,7 @@ function App() {
     setSelectedCampaign(null);
     setView("list");
   };
-  
+
   const handleCampaignStatusChange = (updatedCampaign: Campaign) => {
     if (selectedCampaign) {
       setSelectedCampaign(updatedCampaign);

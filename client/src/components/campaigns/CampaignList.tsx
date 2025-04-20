@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Campaign, CampaignStatus } from "../../lib/types";
 import { campaignApi } from "../../lib/api";
 import { Button } from "../ui/button";
-import { Switch } from "../ui/switch"; 
+import { Switch } from "../ui/switch";
 import { toast } from "sonner";
 
 interface CampaignListProps {
@@ -43,27 +43,29 @@ export function CampaignList({
     onCreateNew();
   };
 
-  const handleStatusToggle = async (campaign: Campaign, e: React.MouseEvent) => {
+  const handleStatusToggle = async (
+    campaign: Campaign,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation(); // Prevent clicking the card when toggling switch
-    
-    const newStatus = campaign.status === CampaignStatus.ACTIVE 
-      ? CampaignStatus.INACTIVE 
-      : CampaignStatus.ACTIVE;
-    
+
+    const newStatus =
+      campaign.status === CampaignStatus.ACTIVE
+        ? CampaignStatus.INACTIVE
+        : CampaignStatus.ACTIVE;
+
     setUpdatingStatus(campaign.id);
-    
+
     try {
       const updatedCampaign = await campaignApi.update({
         id: campaign.id,
         status: newStatus,
       });
-      
+
       setCampaigns((prevCampaigns) =>
-        prevCampaigns.map((c) =>
-          c.id === campaign.id ? updatedCampaign : c
-        )
+        prevCampaigns.map((c) => (c.id === campaign.id ? updatedCampaign : c))
       );
-      
+
       toast(`Campaign status updated to ${newStatus}`);
     } catch (err) {
       console.error("Error updating campaign status:", err);
@@ -89,7 +91,7 @@ export function CampaignList({
             Create Campaign
           </Button>
         </div>
-        
+
         <div className="flex flex-col items-center justify-center py-16 px-4 border border-dashed rounded-lg bg-destructive/10">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -107,16 +109,14 @@ export function CampaignList({
           </svg>
           <h3 className="text-lg font-medium mb-2 text-destructive">{error}</h3>
           <p className="text-center text-muted-foreground mb-6 max-w-md">
-            There was a problem fetching campaigns. You can try again or create a new campaign.
+            There was a problem fetching campaigns. You can try again or create
+            a new campaign.
           </p>
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => window.location.reload()}
-            >
+            <Button variant="outline" onClick={() => window.location.reload()}>
               Retry
             </Button>
-            <Button 
+            <Button
               onClick={handleCreateClick}
               className="bg-primary text-white hover:bg-primary/90"
             >
@@ -158,9 +158,10 @@ export function CampaignList({
           </svg>
           <h3 className="text-lg font-medium mb-2">No campaigns found</h3>
           <p className="text-center text-muted-foreground mb-6 max-w-md">
-            You haven't created any campaigns yet. Create your first campaign to start engaging with leads on LinkedIn.
+            You haven't created any campaigns yet. Create your first campaign to
+            start engaging with leads on LinkedIn.
           </p>
-          <Button 
+          <Button
             onClick={handleCreateClick}
             size="lg"
             className="bg-primary text-white hover:bg-primary/90"
@@ -178,9 +179,14 @@ export function CampaignList({
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-medium">{campaign.name}</h3>
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="flex items-center gap-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <span className="text-xs text-muted-foreground">
-                    {campaign.status === CampaignStatus.ACTIVE ? "Active" : "Inactive"}
+                    {campaign.status === CampaignStatus.ACTIVE
+                      ? "Active"
+                      : "Inactive"}
                   </span>
                   <Switch
                     checked={campaign.status === CampaignStatus.ACTIVE}
