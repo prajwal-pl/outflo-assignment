@@ -25,7 +25,7 @@ model Campaign {
   description String
   status      CampaignStatus @default(ACTIVE)
   leads       String[]
-  accountIDs  String[]       @db.ObjectId
+  accountIDs  String[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 }

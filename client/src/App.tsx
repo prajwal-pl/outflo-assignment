@@ -56,6 +56,12 @@ function App() {
     setSelectedCampaign(null);
     setView("list");
   };
+  
+  const handleCampaignStatusChange = (updatedCampaign: Campaign) => {
+    if (selectedCampaign) {
+      setSelectedCampaign(updatedCampaign);
+    }
+  };
 
   return (
     <Layout>
@@ -94,6 +100,7 @@ function App() {
               onEdit={handleEdit}
               onBack={handleBack}
               onDeleted={handleCampaignDeleted}
+              onStatusChange={handleCampaignStatusChange}
             />
           )}
         </TabsContent>

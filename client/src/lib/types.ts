@@ -11,7 +11,7 @@ export interface Campaign {
   description: string;
   status: CampaignStatus;
   leads: string[]; // LinkedIn URLs
-  accountIDs: string[]; // MongoDB ObjectIDs
+  accountIDs: string[]; // LinkedIn Profile IDs
   createdAt: string;
   updatedAt: string;
 }

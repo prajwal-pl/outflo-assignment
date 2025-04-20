@@ -1,15 +1,28 @@
 import { useState } from "react";
-import { Campaign } from "../../lib/types";
+import { Campaign, CampaignStatus } from "../../lib/types";
 import { campaignApi, linkedinApi } from "../../lib/api";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Switch } from "../ui/switch"; 
 import LinkedInProfileParser from "../linkedin/LinkedInProfileParser";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 interface CampaignDetailsProps {
   campaign: Campaign;
   onEdit: () => void;
   onBack: () => void;
   onDeleted: () => void;
+  onStatusChange?: (campaign: Campaign) => void;
 }
 
 export function CampaignDetails({
@@ -17,30 +30,59 @@ export function CampaignDetails({
   onEdit,
   onBack,
   onDeleted,
+  onStatusChange,
 }: CampaignDetailsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [personalizedMessages, setPersonalizedMessages] = useState<
     Record<string, string>
   >({});
   const [processingUrl, setProcessingUrl] = useState<string | null>(null);
+  const [currentStatus, setCurrentStatus] = useState<CampaignStatus>(campaign.status);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm("Are you sure you want to delete this campaign?")) {
-      return;
-    }
-
     setIsDeleting(true);
     setError(null);
 
     try {
       await campaignApi.delete(campaign.id);
+      setDeleteDialogOpen(false);
       onDeleted();
     } catch (err) {
       console.error("Error deleting campaign:", err);
       setError("Failed to delete campaign");
       setIsDeleting(false);
+    }
+  }
+
+  async function handleStatusToggle() {
+    const newStatus = currentStatus === CampaignStatus.ACTIVE 
+      ? CampaignStatus.INACTIVE 
+      : CampaignStatus.ACTIVE;
+    
+    setIsUpdatingStatus(true);
+    setError(null);
+    
+    try {
+      const updatedCampaign = await campaignApi.update({
+        id: campaign.id,
+        status: newStatus,
+      });
+      
+      setCurrentStatus(newStatus);
+      toast(`Campaign status updated to ${newStatus}`);
+      
+      if (onStatusChange) {
+        onStatusChange(updatedCampaign);
+      }
+    } catch (err) {
+      console.error("Error toggling campaign status:", err);
+      setError("Failed to update campaign status");
+    } finally {
+      setIsUpdatingStatus(false);
     }
   }
 
@@ -74,6 +116,28 @@ export function CampaignDetails({
 
   return (
     <div className="space-y-6">
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this campaign?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the campaign
+              and remove all associated data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete} 
+              disabled={isDeleting} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete Campaign"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={onBack}>
           ← Back to Campaigns
@@ -84,10 +148,10 @@ export function CampaignDetails({
           </Button>
           <Button
             variant="destructive"
-            onClick={handleDelete}
+            onClick={() => setDeleteDialogOpen(true)}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete Campaign"}
+            Delete Campaign
           </Button>
         </div>
       </div>
@@ -107,15 +171,16 @@ export function CampaignDetails({
       <div className="bg-card p-6 rounded-lg border shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">{campaign.name}</h2>
-          <span
-            className={`text-sm px-3 py-1 rounded-full ${
-              campaign.status === "ACTIVE"
-                ? "bg-green-100 text-green-800"
-                : "bg-yellow-100 text-yellow-800"
-            }`}
-          >
-            {campaign.status}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">
+              {currentStatus === CampaignStatus.ACTIVE ? "Active" : "Inactive"}
+            </span>
+            <Switch
+              checked={currentStatus === CampaignStatus.ACTIVE}
+              onCheckedChange={handleStatusToggle}
+              disabled={isUpdatingStatus}
+            />
+          </div>
         </div>
 
         <p className="text-muted-foreground mb-6">{campaign.description}</p>
@@ -142,7 +207,7 @@ export function CampaignDetails({
         <Tabs defaultValue="leads">
           <TabsList className="mb-4">
             <TabsTrigger value="leads">LinkedIn Leads</TabsTrigger>
-            <TabsTrigger value="accounts">Account IDs</TabsTrigger>
+            <TabsTrigger value="accounts">LinkedIn Profile IDs</TabsTrigger>
             <TabsTrigger value="parser">Profile Parser</TabsTrigger>
           </TabsList>
 
@@ -197,10 +262,10 @@ export function CampaignDetails({
           </TabsContent>
 
           <TabsContent value="accounts">
-            <h3 className="font-medium mb-2">Account IDs</h3>
+            <h3 className="font-medium mb-2">LinkedIn Profile IDs</h3>
             {campaign.accountIDs.length === 0 ? (
               <p className="text-muted-foreground">
-                No accounts configured for this campaign.
+                No LinkedIn profile IDs configured for this campaign.
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

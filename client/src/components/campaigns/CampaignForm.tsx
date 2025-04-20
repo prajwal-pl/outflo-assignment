@@ -189,7 +189,7 @@ export function CampaignForm({
 
         <div className="space-y-2">
           <label htmlFor="accountIDs" className="text-sm font-medium">
-            Account IDs (one ID per line)
+            LinkedIn Profile IDs (one ID per line)
           </label>
           <textarea
             id="accountIDs"
@@ -197,10 +197,10 @@ export function CampaignForm({
             rows={2}
             value={accountIDsText}
             onChange={(e) => setAccountIDsText(e.target.value)}
-            placeholder="123&#10;456"
+            placeholder="profile-id-123&#10;profile-id-456"
           />
           <p className="text-xs text-muted-foreground">
-            Enter MongoDB account IDs, one per line
+            Enter LinkedIn profile IDs, one per line
           </p>
         </div>
 

@@ -13,12 +13,9 @@ export const fetchAllCampaigns: RequestHandler = async (req, res) => {
       },
     });
 
-    if (!campaigns || campaigns.length === 0) {
-      res.status(404).json({ message: "No campaigns found" });
-    }
-
+    // Return empty array instead of 404 when no campaigns are found
+    // This allows the client to properly show the empty state UI
     console.log(campaigns);
-
     res.status(200).json(campaigns);
   } catch (error) {
     console.error("Error fetching campaigns:", error);
@@ -35,6 +32,7 @@ export const fetchSingleCampaign: RequestHandler = async (req, res) => {
 
     if (!campaign) {
       res.status(404).json({ error: "Campaign not found" });
+      return;
     }
 
     res.status(200).json(campaign);
